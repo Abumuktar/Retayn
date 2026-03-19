@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retayn AI Demo | Persistent Memory</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Memory Panel -->
+        <aside class="memory-panel">
+            <div class="panel-header">
+                <span class="pulse-icon"></span>
+                <h2>Retayn Memory Bank</h2>
+            </div>
+            <div id="memory-list" class="memory-list">
+                <div class="empty-state">No memories stored yet...</div>
+            </div>
+            <div class="panel-footer">
+                <p>Live context from <code>retayn-production</code></p>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="logo">🌌 Retayn</div>
+                <div class="status-badge">Demo Mode</div>
+            </header>
+            
+            <div id="chat-messages" class="chat-messages">
+                <div class="message ai-message">
+                    Hello! I'm an AI powered by Retayn. Tell me something about yourself, and I'll remember it forever.
+                </div>
+            </div>
+
+            <form id="chat-form" class="chat-input-container">
+                <input type="text" id="user-input" placeholder="Type something for me to remember..." autocomplete="off">
+                <button type="submit">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12L2.01 3L2 10l15 2l-15 2z"></path></svg>
+                </button>
+            </form>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
