@@ -13,7 +13,10 @@ import { supabase } from './lib/supabase';
 import { authMiddleware } from './middleware/auth';
 import { storeMemory, getMemories, deleteMemory } from './controllers/memory';
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  allowedHeaders: ['Content-Type', 'X-API-KEY']
+}));
 app.use(express.json());
 
 // Basic Heartbeat

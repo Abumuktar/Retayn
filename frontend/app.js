@@ -1,6 +1,11 @@
 const API_URL = 'https://retayn-production.up.railway.app/v1';
 const API_KEY = 'elio_test_key_123';
-const USER_ID = 'demo_user_' + Math.random().toString(36).substr(2, 9);
+
+// Persist User ID so refresh doesn't wipe everything
+if (!localStorage.getItem('retayn_user_id')) {
+    localStorage.setItem('retayn_user_id', 'demo_user_' + Math.random().toString(36).substr(2, 9));
+}
+const USER_ID = localStorage.getItem('retayn_user_id');
 
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
@@ -8,6 +13,7 @@ const chatMessages = document.getElementById('chat-messages');
 const memoryList = document.getElementById('memory-list');
 
 // Initialize
+addMessage("System: Connected to " + API_URL, 'ai');
 fetchMemories();
 
 chatForm.addEventListener('submit', async (e) => {
@@ -21,7 +27,8 @@ chatForm.addEventListener('submit', async (e) => {
 
     // 2. Store in Retayn
     try {
-        await fetch(`${API_URL}/memories`, {
+        console.log('Sending to Retayn...', { user_id: USER_ID, content: message });
+        const res = await fetch(`${API_URL}/memories`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -33,18 +40,21 @@ chatForm.addEventListener('submit', async (e) => {
                 type: 'fact'
             })
         });
+        
+        const result = await res.json();
+        console.log('Retayn Saved:', result);
 
         // 3. Refresh Memory Bank visually
-        fetchMemories();
+        await fetchMemories();
 
         // 4. Fake AI Response
         setTimeout(() => {
             addMessage(`Got it. I've safely stored that in my memory. Check the sidebar!`, 'ai');
-        }, 800);
+        }, 500);
 
     } catch (error) {
         console.error('Retayn Error:', error);
-        addMessage('❌ Error talking to Retayn server.', 'ai');
+        addMessage('❌ Error: Could not reach Retayn. (Check Console F12 for details)', 'ai');
     }
 });
 
@@ -61,10 +71,18 @@ async function fetchMemories() {
 }
 
 function updateMemoryPanel(memories) {
-    if (!memories.length) return;
+    if (!memories || !Array.isArray(memories)) {
+        console.error('Invalid memories data:', memories);
+        return;
+    }
     
+    if (memories.length === 0) {
+        memoryList.innerHTML = '<div class="empty-state">No memories yet. Start typing!</div>';
+        return;
+    }
+
     memoryList.innerHTML = '';
-    memories.reverse().forEach(mem => {
+    memories.forEach(mem => {
         const card = document.createElement('div');
         card.className = 'memory-card';
         card.innerHTML = `
