@@ -14,6 +14,7 @@ Run the provided `supabase_schema.sql` in your Supabase SQL Editor.
 ### 2. Configure Environment
 Copy `.env.example` to `.env` and add your Supabase credentials:
 ```bash
+# Production URL: https://retayn-production.up.railway.app
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 PORT=3000
@@ -34,7 +35,7 @@ All requests require the `X-API-KEY` header.
 ### 📥 Store Memory
 `POST /v1/memories`
 ```bash
-curl -X POST http://localhost:3000/v1/memories \
+curl -X POST https://retayn-production.up.railway.app/v1/memories \
   -H "X-API-KEY: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
