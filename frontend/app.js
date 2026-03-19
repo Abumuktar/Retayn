@@ -1,16 +1,18 @@
 const API_URL = 'https://retayn-production.up.railway.app/v1';
 const API_KEY = 'elio_test_key_123';
 
+const chatForm = document.getElementById('chat-form');
+const userInput = document.getElementById('user-input');
+const chatMessages = document.getElementById('chat-messages');
+const memoryList = document.getElementById('memory-list');
+const memoryStatus = document.getElementById('memory-status');
+const refreshBtn = document.getElementById('refresh-btn');
+
 // Persist User ID so refresh doesn't wipe everything
 if (!localStorage.getItem('retayn_user_id')) {
     localStorage.setItem('retayn_user_id', 'demo_user_' + Math.random().toString(36).substr(2, 9));
 }
 const USER_ID = localStorage.getItem('retayn_user_id');
-
-const chatForm = document.getElementById('chat-form');
-const userInput = document.getElementById('user-input');
-const chatMessages = document.getElementById('chat-messages');
-const memoryList = document.getElementById('memory-list');
 
 // Initialize
 addMessage("System: Connected to " + API_URL, 'ai');
@@ -58,15 +60,26 @@ chatForm.addEventListener('submit', async (e) => {
     }
 });
 
+refreshBtn.onclick = () => fetchMemories();
+
 async function fetchMemories() {
     try {
+        memoryStatus.textContent = 'Reading from Retayn...';
         const response = await fetch(`${API_URL}/memories/${USER_ID}`, {
             headers: { 'X-API-KEY': API_KEY }
         });
+
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
         const memories = await response.json();
+        console.log('Retrieved memories:', memories);
         updateMemoryPanel(memories);
+        memoryStatus.textContent = '';
     } catch (error) {
         console.error('Fetch Error:', error);
+        memoryStatus.textContent = '❌ Sync Error: ' + error.message;
     }
 }
 

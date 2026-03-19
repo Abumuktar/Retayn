@@ -41,7 +41,22 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.mini-btn {
+    padding: 4px 8px !important;
+    background: rgba(255,255,255,0.05) !important;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.status-msg {
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+    font-style: italic;
 }
 
 .panel-header h2 {

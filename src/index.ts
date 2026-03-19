@@ -14,7 +14,16 @@ import { authMiddleware } from './middleware/auth';
 import { storeMemory, getMemories, deleteMemory } from './controllers/memory';
 
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    // Allow null origin (from file://) and * for testing
+    if (!origin || origin === 'null') {
+      callback(null, true);
+    } else {
+      callback(null, true);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'X-API-KEY']
 }));
 app.use(express.json());
