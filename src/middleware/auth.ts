@@ -9,6 +9,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   }
 
   // Check API Key in Supabase
+  console.log(`[AUTH] Checking key: ${apiKey?.substring(0, 4)}... Source: ${req.ip}`);
+  
   const { data, error } = await supabase
     .from('api_keys')
     .select('id')

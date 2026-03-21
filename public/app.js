@@ -64,22 +64,22 @@ refreshBtn.onclick = () => fetchMemories();
 
 async function fetchMemories() {
     try {
-        memoryStatus.textContent = 'Reading from Retayn...';
+        memoryStatus.innerHTML = '<span class="loading-spinner"></span> Refilling Memory Bank...';
         const response = await fetch(`${API_URL}/memories/${USER_ID}`, {
             headers: { 'X-API-KEY': API_KEY }
         });
 
         if (!response.ok) {
-            throw new Error(`Server responded with ${response.status}`);
+            if (response.status === 403) throw new Error("Invalid API Key. Please check Supabase.");
+            throw new Error(`Server error: ${response.status}`);
         }
 
         const memories = await response.json();
-        console.log('Retrieved memories:', memories);
         updateMemoryPanel(memories);
         memoryStatus.textContent = '';
     } catch (error) {
         console.error('Fetch Error:', error);
-        memoryStatus.textContent = '❌ Sync Error: ' + error.message;
+        memoryStatus.innerHTML = `<span style="color: #ff4b4b">⚠️ ${error.message}</span>`;
     }
 }
 

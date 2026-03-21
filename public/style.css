@@ -90,42 +90,86 @@ body {
     gap: 12px;
 }
 
+/* Responsive Layout */
+@media (max-width: 900px) {
+    .app-container {
+        flex-direction: column-reverse;
+    }
+    .memory-panel {
+        width: 100%;
+        height: 300px;
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .chat-messages {
+        padding: 20px;
+    }
+    .chat-input-container {
+        padding: 20px;
+    }
+}
+
 .memory-card {
-    background: rgba(255,255,255,0.03);
-    padding: 16px;
-    border-radius: 12px;
+    background: rgba(255,255,255,0.02);
+    padding: 14px;
+    border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.05);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    cursor: default;
 }
 
 .memory-card:hover {
-    border-color: var(--accent-blue);
-    background: rgba(79, 142, 247, 0.05);
+    transform: translateX(4px);
+    border-color: rgba(79, 142, 247, 0.3);
+    background: rgba(79, 142, 247, 0.03);
 }
 
 .memory-card .content {
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin-bottom: 8px;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    word-break: break-word;
 }
 
 .memory-card .timestamp {
     font-size: 0.7rem;
     color: var(--text-muted);
+    display: block;
+    text-align: right;
 }
 
 .empty-state {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 60px;
+    padding: 20px;
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 12px;
+    opacity: 0.6;
 }
 
-.panel-footer {
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    font-size: 0.75rem;
-    color: var(--text-muted);
+.loading-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(79, 142, 247, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--accent-blue);
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.panel-footer p {
+    opacity: 0.5;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Chat Area */
