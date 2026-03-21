@@ -2,7 +2,13 @@
 
 > "The default memory layer for the AI era."
 
-Elio gives your AI applications persistent, structured memory via a single, developer-friendly API. Stop rebuilding context storage and start building better AI products.
+Retayn gives your AI applications persistent, structured memory via a single, developer-friendly API. Stop rebuilding context storage and start building better AI products.
+
+---
+
+## 🧠 Live Demo (Interactive Chatbot)
+The easiest way to see Retayn in action is to visit your live demo:
+**[https://retayn-production.up.railway.app](https://retayn-production.up.railway.app)**
 
 ---
 
@@ -14,7 +20,6 @@ Run the provided `supabase_schema.sql` in your Supabase SQL Editor.
 ### 2. Configure Environment
 Copy `.env.example` to `.env` and add your Supabase credentials:
 ```bash
-# Production URL: https://retayn-production.up.railway.app
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 PORT=3000
@@ -49,14 +54,14 @@ curl -X POST https://retayn-production.up.railway.app/v1/memories \
 `GET /v1/memories/:user_id?query=concise`
 ```bash
 curl -H "X-API-KEY: your_api_key" \
-  "http://localhost:3000/v1/memories/user_123?query=concise"
+  "https://retayn-production.up.railway.app/v1/memories/user_123?query=concise"
 ```
 
 ### 🗑️ Delete Memory
 `DELETE /v1/memories/:id`
 ```bash
 curl -X DELETE -H "X-API-KEY: your_api_key" \
-  "http://localhost:3000/v1/memories/mem_abc123"
+  "https://retayn-production.up.railway.app/v1/memories/mem_abc123"
 ```
 
 ---
@@ -68,8 +73,4 @@ curl -X DELETE -H "X-API-KEY: your_api_key" \
 
 ---
 
-## 🎓 Demo Chatbot (10 lines)
-Check out `scripts/demo.ts` for a simple implementation showing Elio in action.
-
----
 Built with 💙 for the African developer ecosystem.

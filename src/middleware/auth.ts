@@ -16,6 +16,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     .single();
 
   if (error || !data) {
+    console.warn(`🔒 Auth Failed: ${error?.message || 'No match'} for key beginning with [${apiKey.substring(0, 5)}...]`);
     return res.status(403).json({ error: 'Invalid API Key' });
   }
 
