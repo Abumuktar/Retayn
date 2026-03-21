@@ -13,20 +13,9 @@ import { supabase } from './lib/supabase';
 import { authMiddleware } from './middleware/auth';
 import { storeMemory, getMemories, deleteMemory } from './controllers/memory';
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow null origin (from file://) and * for testing
-    if (!origin || origin === 'null') {
-      callback(null, true);
-    } else {
-      callback(null, true);
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'X-API-KEY']
-}));
+app.use(cors()); // Back to simpler CORS since same-origin will be used
 app.use(express.json());
+app.use(express.static('public'));
 
 // Basic Heartbeat
 app.get('/health', (req, res) => {

@@ -1,0 +1,233 @@
+:root {
+    --bg-dark: #0A0F1E;
+    --accent-blue: #4F8EF7;
+    --surface-light: #F4F6FF;
+    --panel-bg: #141B2D;
+    --text-main: #FFFFFF;
+    --text-muted: #8E9AAF;
+    --shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Memory Panel (Sidebar) */
+.memory-panel {
+    width: 350px;
+    background-color: var(--panel-bg);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.mini-btn {
+    padding: 4px 8px !important;
+    background: rgba(255,255,255,0.05) !important;
+    font-size: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.status-msg {
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+.panel-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+}
+
+.pulse-icon {
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-blue);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    70% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.memory-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.memory-card {
+    background: rgba(255,255,255,0.03);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+}
+
+.memory-card:hover {
+    border-color: var(--accent-blue);
+    background: rgba(79, 142, 247, 0.05);
+}
+
+.memory-card .content {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.memory-card .timestamp {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.empty-state {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.panel-footer {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Chat Area */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-dark);
+}
+
+.chat-header {
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    background: rgba(79, 142, 247, 0.1);
+    color: var(--accent-blue);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--accent-blue);
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.message {
+    max-width: 70%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.ai-message {
+    align-self: flex-start;
+    background: var(--panel-bg);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-bottom-left-radius: 2px;
+}
+
+.user-message {
+    align-self: flex-end;
+    background: var(--accent-blue);
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+.chat-input-container {
+    padding: 30px 40px;
+    display: flex;
+    gap: 16px;
+}
+
+#user-input {
+    flex: 1;
+    background: var(--panel-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 24px;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#user-input:focus {
+    border-color: var(--accent-blue);
+}
+
+button {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
