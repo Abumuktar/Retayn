@@ -4,300 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retayn | Intelligent Memory Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0a0a0c;
-            --panel: #16161d;
-            --accent: #3b82f6;
-            --text: #ffffff;
-            --text-dim: #94a3b8;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+    <style type="text/tailwindcss">
+        @layer base {
+            body { font-family: 'Inter', sans-serif; }
+            h1, h2, h3, strong { font-family: 'Outfit', sans-serif; }
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* Sidebar: Memory Bank */
-        .sidebar {
-            width: 320px;
-            background: var(--panel);
-            border-right: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 100;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .sidebar-header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 24px;
-            background: linear-gradient(135deg, #fff 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .memory-list {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-        }
-
-        .memory-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            font-size: 14px;
-            line-height: 1.5;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .memory-card .timestamp {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-top: 6px;
-        }
-
-        /* Main Chat Area */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            min-width: 0;
-        }
-
-        .chat-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(10, 10, 12, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 50;
-        }
-
-        /* Mobile Utility */
-        .mobile-toggle {
-            display: none;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-right: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* Responsive Breakpoint */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -320px;
-                top: 0;
-                bottom: 0;
-                box-shadow: 20px 0 50px rgba(0,0,0,0.5);
-            }
-
-            .sidebar.active {
-                left: 0;
-            }
-
-            .mobile-toggle {
-                display: block;
-            }
-
-            .message {
-                max-width: 90%;
-            }
-
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.6);
-                backdrop-filter: blur(4px);
-                z-index: 90;
-            }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-
-        .message {
-            margin-bottom: 24px;
-            max-width: 80%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message.user {
-            margin-left: auto;
-            align-items: flex-end;
-        }
-
-        .message-content {
-            padding: 12px 18px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.4;
-        }
-
-        .user .message-content {
-            background: var(--accent);
-            border-bottom-right-radius: 4px;
-        }
-
-        .ai .message-content {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-bottom-left-radius: 4px;
-        }
-
-        /* Input Area */
-        .input-container {
-            padding: 24px;
-            background: linear-gradient(0deg, var(--bg) 0%, transparent 100%);
-        }
-
-        .input-wrapper {
-            background: var(--panel);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-        }
-
-        #user-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 12px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        #send-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-
-        #send-btn:hover {
-            transform: scale(1.05);
-        }
-
-        #send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Animations */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--glass-border);
-            border-radius: 10px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            box-shadow: 0 0 8px #10b981;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
     </style>
 </head>
-<body>
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h1>Retayn Bank</h1>
-            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Long-term Memory Store</div>
+<body class="bg-[#0A0A0C] text-white h-screen overflow-hidden flex flex-col md:flex-row">
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Sidebar: Memory Bank -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#16161D] border-r border-white/10 flex flex-col transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
+        <div class="p-6 border-b border-white/10">
+            <h1 class="text-2xl font-bold bg-gradient-to-br from-white to-[#3b82f6] bg-clip-text text-transparent">Retayn Bank</h1>
+            <p class="text-[10px] text-white/40 uppercase tracking-widest mt-1">Long-term Memory Store</p>
         </div>
-        <div id="memory-list" class="memory-list">
+        <div id="memory-list" class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-3">
             <!-- Memories load here -->
+            <div class="text-white/20 text-xs text-center mt-10 text-balance px-4">Initializing memory bank...</div>
         </div>
-    </div>
+        <div class="p-4 border-t border-white/5 text-[10px] text-white/30 text-center uppercase tracking-tighter">
+            Powered by <span class="text-[#3b82f6]/70 font-bold">Retayn AI</span>
+        </div>
+    </aside>
 
-    <div class="main">
-        <div class="chat-header">
-            <div style="display: flex; align-items: center;">
-                <button id="toggle-bank" class="mobile-toggle">🏦 Bank</button>
-                <span class="status-dot"></span>
-                <strong>Retayn Bot</strong>
+    <!-- Main Chat Area -->
+    <div class="flex-1 flex flex-col relative min-w-0 bg-[#0A0A0C]">
+        <!-- Header -->
+        <header class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-[#0A0A0C]/80 backdrop-blur-xl sticky top-0 z-30">
+            <div class="flex items-center gap-3">
+                <button id="toggle-bank" class="md:hidden p-2 -ml-2 bg-white/5 border border-white/10 rounded-lg text-white/70 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-[#10b981] rounded-full shadow-[0_0_8px_#10b981]"></span>
+                    <strong class="text-sm tracking-tight">Retayn Bot</strong>
+                </div>
             </div>
-            <button id="clear-btn" style="background:transparent; border:none; color:var(--text-dim); cursor:pointer; font-size:12px;">Clear History</button>
-        </div>
+            <button id="clear-btn" class="text-[10px] text-white/40 hover:text-white/70 transition-colors uppercase tracking-widest font-semibold border-b border-transparent hover:border-white/20 pb-0.5">Clear History</button>
+        </header>
 
-        <div id="chat-messages" class="chat-messages">
+        <!-- Chat Messages -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-6 custom-scrollbar">
             <!-- Messages load here -->
         </div>
 
-        <div class="input-container">
-            <form id="chat-form">
-                <div class="input-wrapper">
-                    <input type="text" id="user-input" placeholder="Tell me something or ask me anything..." autocomplete="off">
-                    <button type="submit" id="send-btn">Send</button>
-                </div>
+        <!-- Input Area -->
+        <div class="p-4 md:p-8 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/80 to-transparent">
+            <form id="chat-form" class="max-w-3xl mx-auto flex gap-3 bg-[#16161D] p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-2xl focus-within:border-[#3b82f6]/50 transition-all">
+                <input type="text" id="user-input" placeholder="Tell me something or ask me anything..." autocomplete="off" class="flex-1 bg-transparent border-none text-white px-4 md:px-5 py-3 outline-none placeholder:text-white/20 text-sm md:text-base">
+                <button type="submit" id="send-btn" class="bg-[#3b82f6] hover:bg-[#2563eb] text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center justify-center min-w-[100px] text-sm md:text-base">Send</button>
             </form>
         </div>
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3000/v1';
-        const API_KEY = 'retayn_test_key_123'; // Hardcoded for demo simplicity
+        // Fix hardcoded localhost for production
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+            ? 'http://localhost:3000/v1' 
+            : window.location.origin + '/v1';
+            
+        const API_KEY = 'retayn_test_key_123'; 
 
         // Persist User ID
         if (!localStorage.getItem('retayn_user_id')) {
@@ -316,8 +91,15 @@
 
         // Mobile Toggle Logic
         const toggleSidebar = (state) => {
-            sidebar.classList.toggle('active', state);
-            overlay.classList.toggle('active', state);
+            if (state) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
         };
 
         toggleBtn.onclick = () => toggleSidebar(true);
@@ -356,13 +138,12 @@
                 }
 
                 if (data.stored) {
-                    // Small delay to let Supabase write
                     setTimeout(fetchMemories, 500);
                 }
 
             } catch (err) {
                 console.error('Chat Error:', err);
-                addMessage("❌ Connection Error. Is the API running at localhost:3000?", 'ai');
+                addMessage("❌ Connection Error. Retayn could not be reached. Checking: " + API_URL, 'ai');
             } finally {
                 setLoading(false);
             }
@@ -373,26 +154,31 @@
                 const res = await fetch(`${API_URL}/memories/${USER_ID}`, {
                     headers: { 'X-API-KEY': API_KEY }
                 });
+                if (!res.ok) throw new Error("Failed to fetch memories");
                 const memories = await res.json();
                 updateMemoryPanel(memories);
             } catch (err) {
                 console.error('Fetch Error:', err);
+                memoryList.innerHTML = '<div class="text-white/20 text-xs text-center mt-10 italic">Connection issues reaching memory bank...</div>';
             }
         }
 
         function updateMemoryPanel(memories) {
-            if (memories.length === 0) {
-                memoryList.innerHTML = '<div style="color:var(--text-dim); font-size:13px; text-align:center; margin-top:40px;">No memories yet.</div>';
+            if (!memories || memories.length === 0) {
+                memoryList.innerHTML = '<div class="text-white/20 text-sm text-center mt-10 italic px-4">No memories yet. Tell me a fact!</div>';
                 return;
             }
 
             memoryList.innerHTML = '';
             memories.forEach(mem => {
                 const card = document.createElement('div');
-                card.className = 'memory-card';
+                card.className = 'bg-white/5 border border-white/10 rounded-xl p-4 transition-all hover:border-[#3b82f6]/50 hover:bg-[#3b82f6]/5 group';
                 card.innerHTML = `
-                    <div>${mem.content}</div>
-                    <div class="timestamp">${new Date(mem.created_at).toLocaleDateString()} ${new Date(mem.created_at).toLocaleTimeString()}</div>
+                    <div class="text-sm leading-relaxed">${mem.content}</div>
+                    <div class="text-[10px] text-white/30 mt-3 flex justify-between group-hover:text-[#3b82f6]/50 transition-colors uppercase tracking-tight font-medium">
+                        <span>Stored Fact</span>
+                        <span>${new Date(mem.created_at).toLocaleDateString()}</span>
+                    </div>
                 `;
                 memoryList.appendChild(card);
             });
@@ -400,20 +186,38 @@
 
         function addMessage(text, side) {
             const div = document.createElement('div');
-            div.className = `message ${side}`;
-            div.innerHTML = `<div class="message-content">${text}</div>`;
+            const isAi = side === 'ai';
+            div.className = `flex ${isAi ? 'justify-start' : 'justify-end'} opacity-0 translate-y-2 transition-all duration-300 ease-out`;
+            
+            div.innerHTML = `
+                <div class="max-w-[85%] md:max-w-[75%] px-5 py-3.5 rounded-2xl text-sm md:text-[15px] leading-relaxed relative ${
+                    isAi 
+                    ? 'bg-[#16161D] text-white border border-white/10 rounded-bl-none' 
+                    : 'bg-[#3b82f6] text-white rounded-br-none shadow-lg shadow-[#3b82f6]/20'
+                }">
+                    ${text}
+                </div>
+            `;
+            
             chatMessages.appendChild(div);
+            // Trigger animation
+            setTimeout(() => {
+                div.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+            
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function setLoading(isLoading) {
             sendBtn.disabled = isLoading;
-            sendBtn.textContent = isLoading ? '...' : 'Send';
+            sendBtn.innerHTML = isLoading ? '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>' : 'Send';
         }
 
         document.getElementById('clear-btn').onclick = () => {
-            chatMessages.innerHTML = '';
-            addMessage("History cleared locally. Memories in the bank remain safe!", 'ai');
+            if(confirm("Clear local chat history? This won't delete stored memories.")) {
+                chatMessages.innerHTML = '';
+                addMessage("History cleared locally. Memories in the bank remain safe!", 'ai');
+            }
         };
     </script>
 </body>
