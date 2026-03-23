@@ -49,4 +49,4 @@ Retayn is a developer-first platform for building personalized AI experiences wi
 - `DELETE /v1/memories/:id`: Remove a memory.
 
 ---
-© 2026 Retayn Infrastructure. Built for the era of personalized AI.
+© 2026 Retayn AI Memory. Built for the era of personalized intelligence.

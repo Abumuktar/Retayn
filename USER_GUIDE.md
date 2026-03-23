@@ -9,13 +9,13 @@ Welcome to the Retayn MVP! This guide will help you test the intelligent memory 
 
 ## 2. Testing the "Intelligence"
 
-The demo uses a **Dummy API Key** (`elio_test_key_123`) so you don't need to configure keys in the database to start.
+The demo uses a **Dummy API Key** (`retayn_test_key_123`) so you don't need to configure keys in the database to start.
 
 ### Phase 1: Storage
 Try talking naturally to the bot:
-- *"My name is Abubakar Muktar"*
-- *"I am based in Katsina"*
-- *"I love fried rice with chicken"*
+- *"My name is Alex Rivera"*
+- *"I am based in San Francisco"*
+- *"I love Pepperoni Pizza"*
 
 **Check it out:** Watch the **"Retayn Bank"** sidebar on the left. It updates in real-time as Retayn extracts these facts from your messages.
 
