@@ -1,76 +1,52 @@
-# 🌌 Retayn: AI Memory & Identity Infrastructure
+# Retayn | AI Memory & Identity Infrastructure 🌌
 
-> "The default memory layer for the AI era."
+Retayn is a developer-first platform for building personalized AI experiences with long-term memory. It allows applications to store, retrieve, and inject user-specific facts and preferences into any AI context seamlessly.
 
-Retayn gives your AI applications persistent, structured memory via a single, developer-friendly API. Stop rebuilding context storage and start building better AI products.
+## Architecture Overview
 
----
+- **Backend**: Express.js (TypeScript)
+- **AI Core**: Groq Llama 3.3 70B (via direct Axios API calls)
+- **Database**: Supabase (PostgreSQL + UUIDs)
+- **Auth**: API-Key based middleware (X-API-KEY header)
+- **Deployed URL**: `https://retayn-production.up.railway.app`
 
-## 🧠 Live Demo (Interactive Chatbot)
-The easiest way to see Retayn in action is to visit your live demo:
-**[https://retayn-production.up.railway.app](https://retayn-production.up.railway.app)**
+## Key Components
 
----
+- **`src/controllers/chat.ts`**: The "brain" of the demo. Handles context retrieval, LLM reasoning (using Groq), and selective memory storage.
+- **`src/lib/groq.ts`**: Lightweight API client for Groq.
+- **`src/lib/supabase.ts`**: Supabase client with auto-protocol fix.
+- **`public/chat.html`**: The premium standalone demo.
 
-## 🚀 Quick Start (Under 10 Minutes)
+## Setup & installation
 
-### 1. Setup Supabase
-Run the provided `supabase_schema.sql` in your Supabase SQL Editor.
+1. **Clone & Install**:
+   ```bash
+   npm install
+   ```
 
-### 2. Configure Environment
-Copy `.env.example` to `.env` and add your Supabase credentials:
-```bash
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-PORT=3000
-```
+2. **Environment Variables**:
+   Create a `.env` file with:
+   ```env
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   GROQ_API_KEY=your_groq_api_key
+   PORT=3000
+   ```
 
-### 3. Install & Start
-```bash
-npm install
-npm run dev
-```
+3. **Database Schema**:
+   Run the contents of `supabase_schema.sql` in your Supabase SQL Editor.
 
----
+4. **Run Dev Mode**:
+   ```bash
+   npm run dev
+   ```
 
-## 🛠️ API Reference
+## API Endpoints
 
-All requests require the `X-API-KEY` header.
-
-### 📥 Store Memory
-`POST /v1/memories`
-```bash
-curl -X POST https://retayn-production.up.railway.app/v1/memories \
-  -H "X-API-KEY: your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_id": "user_123",
-    "content": "User prefers concise responses and dark mode.",
-    "type": "preference"
-  }'
-```
-
-### 🔍 Retrieve Memories
-`GET /v1/memories/:user_id?query=concise`
-```bash
-curl -H "X-API-KEY: your_api_key" \
-  "https://retayn-production.up.railway.app/v1/memories/user_123?query=concise"
-```
-
-### 🗑️ Delete Memory
-`DELETE /v1/memories/:id`
-```bash
-curl -X DELETE -H "X-API-KEY: your_api_key" \
-  "https://retayn-production.up.railway.app/v1/memories/mem_abc123"
-```
+- `POST /v1/chat`: Intelligent chat with memory.
+- `POST /v1/memories`: Manual memory storage.
+- `GET /v1/memories/:user_id`: Retrieve all memories for a user.
+- `DELETE /v1/memories/:id`: Remove a memory.
 
 ---
-
-## 🎨 Brand Identity
-- **Primary Background**: `#0A0F1E` (Deep Intelligence)
-- **Accent**: `#4F8EF7` (Electric Blue)
-- **Surface**: `#F4F6FF` (Cool White)
-
----
-
-Built with 💙 for the African developer ecosystem.
+© 2026 Retayn Infrastructure. Built for the era of personalized AI.

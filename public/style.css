@@ -59,6 +59,27 @@ body {
     font-style: italic;
 }
 
+.search-container {
+    margin-bottom: 16px;
+}
+
+#memory-search {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: white;
+    font-size: 0.8rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+#memory-search:focus {
+    border-color: var(--accent-blue);
+    background: rgba(255,255,255,0.05);
+}
+
 .panel-header h2 {
     font-size: 1.1rem;
     font-weight: 600;

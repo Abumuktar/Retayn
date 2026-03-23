@@ -1,53 +1,426 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retayn AI Demo | Persistent Memory</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Retayn AI Memory Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js for simpler state management without build step -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Marked for markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#0A0F1E', // Deep Intelligence
+              accent: '#4F8EF7',  // Electric Blue
+              surface: '#F4F6FF'  // Cool White
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F4F6FF;
+      color: #0A0F1E;
+    }
+    .dark-panel {
+      background-color: #0A0F1E;
+      color: #F4F6FF;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4F8EF7;
+      border-radius: 4px;
+    }
+    .prose p { margin-bottom: 0.5rem; }
+    .prose p:last-child { margin-bottom: 0; }
+  </style>
 </head>
-<body>
-    <div class="app-container">
-        <!-- Sidebar / Memory Panel -->
-        <aside class="memory-panel">
-            <div class="panel-header">
-                <span class="pulse-icon"></span>
-                <h2>Retayn Memory Bank</h2>
-                <button id="refresh-btn" class="mini-btn">🔄</button>
-            </div>
-            <div id="memory-status" class="status-msg"></div>
-            <div id="memory-list" class="memory-list">
-                <div class="empty-state">No memories stored yet...</div>
-            </div>
-            <div class="panel-footer">
-                <p>Live context from <code>retayn-production</code></p>
-            </div>
-        </aside>
+<body class="h-screen flex overflow-hidden font-sans" x-data="chatbot()">
 
-        <!-- Main Chat Area -->
-        <main class="chat-area">
-            <header class="chat-header">
-                <div class="logo">🌌 Retayn</div>
-                <div class="status-badge">Demo Mode</div>
-            </header>
-            
-            <div id="chat-messages" class="chat-messages">
-                <div class="message ai-message">
-                    Hello! I'm an AI powered by Retayn. Tell me something about yourself, and I'll remember it forever.
-                </div>
-            </div>
+  <!-- Left Column: Chat Interface -->
+  <div class="flex-1 flex flex-col h-full bg-white shadow-xl z-10">
+    <!-- Header -->
+    <header class="dark-panel p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded bg-brand-accent flex items-center justify-center font-bold text-white">R</div>
+        <h1 class="text-xl font-bold tracking-tight">Retayn Assistant</h1>
+      </div>
+      <div class="text-sm opacity-80 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full" :class="retaynKey.length > 5 ? 'bg-green-400' : 'bg-red-400'"></span>
+        <span x-text="retaynKey.length > 5 ? 'API Connected' : 'Missing API Key'"></span>
+      </div>
+    </header>
 
-            <form id="chat-form" class="chat-input-container">
-                <input type="text" id="user-input" placeholder="Type something for me to remember..." autocomplete="off">
-                <button type="submit">
-                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12L2.01 3L2 10l15 2l-15 2z"></path></svg>
-                </button>
-            </form>
-        </main>
+    <!-- Chat Messages -->
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-brand-surface pb-6">
+      
+      <template x-if="messages.length === 0">
+        <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
+          <svg class="w-16 h-16 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+          <p>Start a conversation. Introduce yourself!</p>
+        </div>
+      </template>
+
+      <template x-for="(msg, index) in messages" :key="index">
+        <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+          <div 
+            class="max-w-[80%] rounded-2xl p-4 shadow-sm"
+            :class="msg.role === 'user' ? 'bg-brand-accent text-white rounded-br-none' : 'bg-white border border-gray-100 rounded-bl-none text-gray-800'"
+          >
+            <div x-show="msg.role === 'assistant'" class="flex items-center gap-2 mb-2 text-xs text-brand-accent font-semibold uppercase tracking-wider">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              AI Response
+            </div>
+            <div class="prose prose-sm max-w-none" :class="msg.role === 'user' ? 'text-white' : ''" x-html="parseMarkdown(msg.content)"></div>
+            <div x-show="msg.newMemoriesStored > 0" class="mt-2 text-xs py-1 px-2 bg-blue-50 text-brand-accent rounded border border-blue-100 inline-block font-medium">
+              <span x-text="'+' + msg.newMemoriesStored + ' new memor' + (msg.newMemoriesStored === 1 ? 'y' : 'ies') + ' saved'"></span>
+            </div>
+          </div>
+        </div>
+      </template>
+      
+      <!-- Loading Indicator -->
+      <div x-show="isLoading" class="flex justify-start">
+        <div class="bg-white border border-gray-100 rounded-2xl rounded-bl-none p-4 shadow-sm text-gray-500 flex items-center gap-2">
+          <svg class="animate-spin h-5 w-5 text-brand-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span x-text="loadingStatus">Thinking...</span>
+        </div>
+      </div>
     </div>
-    <script src="app.js"></script>
+
+    <!-- Input Area -->
+    <div class="p-4 bg-white border-t border-gray-100">
+      <form @submit.prevent="sendMessage" class="flex gap-2">
+        <input 
+          type="text" 
+          x-model="userInput" 
+          placeholder="Type your message here..." 
+          class="flex-1 bg-brand-surface border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-accent transition-all"
+          :disabled="isLoading || !openaiKey || !retaynKey"
+        />
+        <button 
+          type="submit" 
+          class="bg-brand-accent hover:bg-blue-600 text-white rounded-xl px-6 py-3 font-medium transition-all shadow-md shadow-brand-accent/20 flex items-center gap-2 disabled:opacity-50"
+          :disabled="isLoading || !userInput.trim() || !openaiKey || !retaynKey"
+        >
+          <span>Send</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </form>
+      <div x-show="!openaiKey.trim() || !retaynKey.trim()" class="mt-2 text-xs text-red-500 font-medium border border-red-100 bg-red-50 p-2 rounded flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        <span>Please enter both API keys in the right panel to unlock the chat.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Memories & Settings -->
+  <div class="w-96 dark-panel flex flex-col h-full border-l border-gray-800 z-20">
+    <div class="p-5 border-b border-gray-800">
+      <h2 class="text-lg font-bold flex items-center gap-2 mb-4">
+        <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        Demo Settings
+      </h2>
+      
+      <div class="space-y-4 text-sm">
+        <div class="relative">
+          <label class="block text-gray-400 mb-1">OpenAI API Key <span class="text-red-400">*</span></label>
+          <input type="password" x-model.live="openaiKey" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:outline-none focus:border-brand-accent pr-8" placeholder="sk-..." />
+          <div x-show="openaiKey.startsWith('sk-')" class="absolute bottom-2.5 right-2 text-green-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+        </div>
+        <div class="relative">
+          <label class="block text-gray-400 mb-1">Retayn API Key <span class="text-red-400">*</span></label>
+          <input type="password" x-model.live="retaynKey" @input.debounce.500ms="fetchMemories" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:outline-none focus:border-brand-accent pr-8" placeholder="Your Supabase / Retayn key" />
+          <div x-show="retaynKey.length > 10" class="absolute bottom-2.5 right-2 text-green-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">User ID</label>
+          <input type="text" x-model="userId" @change="fetchMemories" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:outline-none focus:border-brand-accent" />
+        </div>
+        <div>
+          <label class="block text-gray-400 mb-1">Retayn API URL</label>
+          <input type="text" x-model="apiUrl" @change="fetchMemories" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:outline-none focus:border-brand-accent" />
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-5 custom-scrollbar flex flex-col relative">
+      <div class="flex items-center justify-between mb-4 sticky top-0 bg-brand pb-2 border-b border-gray-800 z-10">
+        <h2 class="text-lg font-bold flex items-center gap-2">
+          <svg class="w-5 h-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          Live Memory
+        </h2>
+        <button @click="fetchMemories" class="text-brand-accent hover:text-white transition-colors" title="Refresh Memories">
+          <svg class="w-5 h-5 flex-shrink-0" :class="isFetchingMemories ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
+      </div>
+
+      <template x-if="memories.length === 0">
+        <div class="flex-1 flex flex-col items-center justify-center text-gray-500 opacity-70 mt-10">
+          <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+          <p class="text-sm text-center">No memories found for this user.<br/>Introduce yourself in the chat!</p>
+        </div>
+      </template>
+
+      <div class="space-y-3 pb-8">
+        <template x-for="memory in memories" :key="memory.id">
+          <div class="bg-gray-800/80 border border-gray-700 rounded-lg p-3 group relative hover:border-brand-accent/50 transition-colors">
+            <p class="text-sm text-gray-200 pr-6" x-text="memory.content"></p>
+            <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+              <span class="capitalize" x-text="memory.type || 'Fact'"></span>
+              <span x-text="new Date(memory.created_at).toLocaleDateString()"></span>
+            </div>
+            <!-- Delete Button -->
+            <button @click="deleteMemory(memory.id)" class="absolute top-2 right-2 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function chatbot() {
+      // Create a default userId if none exists in localStorage
+      const defaultUserId = "demo_user_" + Math.floor(Math.random() * 10000);
+      
+      return {
+        openaiKey: localStorage.getItem('openaiKey') || '',
+        retaynKey: localStorage.getItem('retaynKey') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1d3l4Ym1nZnN0aXljY3pqcXFkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzkxMzY1OSwiZXhwIjoyMDg5NDg5NjU5fQ.lD4lqDxAANU5_uxBQWJOQQVPONrlPe7L7Z5uXPY5tK8',
+        userId: localStorage.getItem('userId') || defaultUserId,
+        apiUrl: window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin,
+        
+        userInput: '',
+        messages: [],
+        memories: [],
+        
+        isLoading: false,
+        loadingStatus: '',
+        isFetchingMemories: false,
+
+        init() {
+          // Sync keys to localstorage so they don't disappear on refresh
+          this.$watch('openaiKey', val => localStorage.setItem('openaiKey', val));
+          this.$watch('retaynKey', val => localStorage.setItem('retaynKey', val));
+          this.$watch('userId', val => {
+            localStorage.setItem('userId', val);
+            this.fetchMemories();
+          });
+          
+          if (this.retaynKey) {
+            this.fetchMemories();
+          }
+
+          // Welcome message
+          this.messages.push({
+            role: 'assistant',
+            content: "Hi! I'm the Retayn Demo Assistant. I'm connected to your long-term memory engine. Tell me your name, where you live, or your favorite food, and I'll remember it forever!",
+            newMemoriesStored: 0
+          });
+        },
+
+        parseMarkdown(text) {
+          if(!text) return '';
+          return marked.parse(text);
+        },
+
+        scrollToBottom() {
+          setTimeout(() => {
+            const container = document.getElementById('chat-container');
+            if (container) {
+              container.scrollTop = container.scrollHeight;
+            }
+          }, 50);
+        },
+
+        async fetchMemories() {
+          if (!this.retaynKey || !this.userId) return;
+          this.isFetchingMemories = true;
+          
+          try {
+            const url = `${this.apiUrl}/v1/memories/${this.userId}`;
+            const response = await fetch(url, {
+              headers: {
+                'X-API-KEY': this.retaynKey,
+              }
+            });
+            
+            if (response.ok) {
+              this.memories = await response.json();
+            } else {
+              console.error("Failed to fetch memories", await response.text());
+            }
+          } catch (err) {
+            console.error("Error fetching memories:", err);
+          } finally {
+            this.isFetchingMemories = false;
+          }
+        },
+
+        async deleteMemory(id) {
+          if (!this.retaynKey) return;
+          if(!confirm("Are you sure you want to forget this memory?")) return;
+          
+          try {
+             const response = await fetch(`${this.apiUrl}/v1/memories/${id}`, {
+              method: 'DELETE',
+              headers: { 'X-API-KEY': this.retaynKey }
+            });
+            if(response.ok) {
+              this.memories = this.memories.filter(m => m.id !== id);
+            }
+          } catch (err) {
+             console.error("Error deleting memory", err);
+          }
+        },
+
+        async sendMessage() {
+          if (!this.userInput.trim() || !this.openaiKey || !this.retaynKey) return;
+          
+          const content = this.userInput;
+          this.userInput = '';
+          
+          this.messages.push({
+            role: 'user',
+            content: content
+          });
+          
+          this.scrollToBottom();
+          this.isLoading = true;
+          
+          try {
+            // STEP 1: Ensure we have the latest memories
+            this.loadingStatus = 'Retrieving context...';
+            await this.fetchMemories();
+            
+            // Build Context string
+            const memoryContext = this.memories.length > 0 
+              ? this.memories.map(m => `- ${m.content}`).join('\n')
+              : "No background memories yet.";
+            
+            // System Prompt: Critical instruction to output JSON
+            const systemPrompt = `You are a helpful AI assistant connected to the Retayn memory engine. 
+Here are the user's past memories:
+${memoryContext}
+
+Your tasks:
+1. Respond to the user's message natively, utilizing the memories where relevant.
+2. Extract any newly provided facts, preferences, or personal details about the user that are NOT already in their past memories. DO NOT extract things you already know.
+3. You MUST output ONLY a valid JSON object with the following schema:
+{
+  "response": "Your conversational response to the user in markdown formatting.",
+  "new_memories": ["Fact 1", "Fact 2"] // Array of string facts. Empty array [] if nothing new.
+}`;
+
+            this.loadingStatus = 'Generating response...';
+            
+            // STEP 2: Call LLM
+            // Convert past chat history into OpenAI format
+            const chatHistory = this.messages.slice(1, -1).map(m => ({
+              role: m.role,
+              content: m.content
+            }));
+            
+            const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.openaiKey}`
+              },
+              body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                response_format: { type: "json_object" }, // Guarantee JSON
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  ...chatHistory,
+                  { role: 'user', content: content }
+                ],
+                temperature: 0.7
+              })
+            });
+
+            if (!aiResponse.ok) {
+              throw new Error("OpenAI API Error: " + await aiResponse.text());
+            }
+
+            const aiData = await aiResponse.json();
+            const resultText = aiData.choices[0].message.content;
+            
+            let resultJson;
+            try {
+               resultJson = JSON.parse(resultText);
+            } catch(e) {
+               console.error("Failed to parse JSON from AI", resultText);
+               resultJson = { response: "I had an error thinking formatting my response.", new_memories: []};
+            }
+
+            // STEP 3: Store new memories via Retayn API
+            let memoriesStoredCount = 0;
+            if (resultJson.new_memories && resultJson.new_memories.length > 0) {
+              this.loadingStatus = 'Storing new memories...';
+              
+              const storagePromises = resultJson.new_memories.map(mem => 
+                fetch(`${this.apiUrl}/v1/memories`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': this.retaynKey
+                  },
+                  body: JSON.stringify({
+                    user_id: this.userId,
+                    content: mem,
+                    type: 'fact'
+                  })
+                })
+              );
+              
+              const results = await Promise.allSettled(storagePromises);
+              memoriesStoredCount = results.filter(r => r.status === 'fulfilled' && r.value.ok).length;
+              
+              // Refresh the memory panel
+              if(memoriesStoredCount > 0) {
+                 await this.fetchMemories();
+              }
+            }
+            
+            // Add assistance message to chat
+            this.messages.push({
+              role: 'assistant',
+              content: resultJson.response,
+              newMemoriesStored: memoriesStoredCount
+            });
+
+          } catch (err) {
+            console.error("Chat error:", err);
+            this.messages.push({
+              role: 'assistant',
+              content: "❌ Error: " + err.message,
+              newMemoriesStored: 0
+            });
+          } finally {
+            this.isLoading = false;
+            this.scrollToBottom();
+          }
+        }
+      }
+    }
+  </script>
 </body>
 </html>

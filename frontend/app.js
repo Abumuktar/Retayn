@@ -1,5 +1,5 @@
 const API_URL = 'https://retayn-production.up.railway.app/v1';
-const API_KEY = 'elio_test_key_123';
+const API_KEY = 'retayn_test_key_123';
 
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
@@ -49,10 +49,12 @@ chatForm.addEventListener('submit', async (e) => {
         // 3. Refresh Memory Bank visually
         await fetchMemories();
 
-        // 4. Fake AI Response
-        setTimeout(() => {
-            addMessage(`Got it. I've safely stored that in my memory. Check the sidebar!`, 'ai');
-        }, 500);
+        // 4. Real AI Response from Backend
+        if (result.response) {
+            addMessage(result.response, 'ai');
+        } else {
+            addMessage(`Got it. I've safely stored that in my memory.`, 'ai');
+        }
 
     } catch (error) {
         console.error('Retayn Error:', error);

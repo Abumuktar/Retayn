@@ -12,8 +12,13 @@ import { supabase } from './lib/supabase';
 
 import { authMiddleware } from './middleware/auth';
 import { storeMemory, getMemories, deleteMemory } from './controllers/memory';
+import { handleChat } from './controllers/chat';
 
-app.use(cors()); // Back to simpler CORS since same-origin will be used
+app.use(cors({
+  origin: '*',
+  allowedHeaders: ['Content-Type', 'X-API-KEY'],
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS']
+}));
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -22,7 +27,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'alive', service: 'Retayn API' });
 });
 
-// Elio Core Endpoints
+// Retayn Core Endpoints
+app.post('/v1/chat', authMiddleware, handleChat);
 app.post('/v1/memories', authMiddleware, storeMemory);
 app.get('/v1/memories/:user_id', authMiddleware, getMemories);
 app.delete('/v1/memories/:id', authMiddleware, deleteMemory);

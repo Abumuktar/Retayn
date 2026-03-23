@@ -1,4 +1,9 @@
-const API_URL = '/v1';
+// Retayn App.js - VERSION 2.1 (Localhost Focus)
+console.log("🌌 Retayn Demo V2.1 Initialized");
+
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') 
+    ? 'http://localhost:3000/v1' 
+    : '/v1';
 const API_KEY = 'elio_test_key_123';
 
 const chatForm = document.getElementById('chat-form');
@@ -13,6 +18,13 @@ if (!localStorage.getItem('retayn_user_id')) {
     localStorage.setItem('retayn_user_id', 'demo_user_' + Math.random().toString(36).substr(2, 9));
 }
 const USER_ID = localStorage.getItem('retayn_user_id');
+
+const memorySearch = document.getElementById('memory-search');
+
+// Search Event
+memorySearch.addEventListener('input', (e) => {
+    fetchMemories(e.target.value);
+});
 
 // Initialize
 addMessage("System: Connected to " + API_URL, 'ai');
@@ -29,43 +41,56 @@ chatForm.addEventListener('submit', async (e) => {
 
     // 2. Store in Retayn
     try {
-        console.log('Sending to Retayn...', { user_id: USER_ID, content: message });
-        const res = await fetch(`${API_URL}/memories`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-KEY': API_KEY
-            },
-            body: JSON.stringify({
-                user_id: USER_ID,
-                content: message,
-                type: 'fact'
-            })
+        await fetch(`${API_URL}/memories`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-API-KEY': API_KEY },
+            body: JSON.stringify({ user_id: USER_ID, content: message })
         });
         
-        const result = await res.json();
-        console.log('Retayn Saved:', result);
-
-        // 3. Refresh Memory Bank visually
         await fetchMemories();
 
-        // 4. Fake AI Response
+        // 4. SMART AI RESPONSE: Questions vs. Statements
+        const isQuestion = message.toLowerCase().match(/(what|who|remember|about|tell|know)/);
+        let queryTerm = message.split(' ').pop().replace(/[?!.]/, "");
+        
+        // If it looks like a "What about..." or "Tell me about..." question, try to find a better keyword
+        if (message.toLowerCase().includes('about ')) {
+            queryTerm = message.toLowerCase().split('about ').pop().replace(/[?!.]/, "");
+        }
+
+        const searchRes = await fetch(`${API_URL}/memories/${USER_ID}?query=${queryTerm}`, {
+            headers: { 'X-API-KEY': API_KEY }
+        });
+        const pastMemories = await searchRes.json();
+
         setTimeout(() => {
-            addMessage(`Got it. I've safely stored that in my memory. Check the sidebar!`, 'ai');
-        }, 500);
+            if (isQuestion && pastMemories.length > 0) {
+                // Find a relevant memory that isn't the current message
+                const relevant = pastMemories.find(m => m.content.toLowerCase() !== message.toLowerCase());
+                if (relevant) {
+                    addMessage(`I looked into my memories! I remember you mentioned: "${relevant.content}"`, 'ai');
+                } else {
+                    addMessage(`I don't have a specific memory about "${queryTerm}" yet, but I've saved this conversation.`, 'ai');
+                }
+            } else if (pastMemories.length > 1) {
+                const fact = pastMemories.find(m => m.content !== message);
+                addMessage(`Interesting! That reminds me of when you said: "${fact.content}"`, 'ai');
+            } else {
+                addMessage(`Noted. I've added that to your memory bank.`, 'ai');
+            }
+        }, 600);
 
     } catch (error) {
-        console.error('Retayn Error:', error);
-        addMessage('❌ Error: Could not reach Retayn. (Check Console F12 for details)', 'ai');
+        addMessage('⚠️ Sync Error. Check console.', 'ai');
     }
 });
 
 refreshBtn.onclick = () => fetchMemories();
 
-async function fetchMemories() {
+async function fetchMemories(query = '') {
     try {
-        memoryStatus.innerHTML = '<span class="loading-spinner"></span> Refilling Memory Bank...';
-        const response = await fetch(`${API_URL}/memories/${USER_ID}`, {
+        memoryStatus.innerHTML = '<span class="loading-spinner"></span> Updating...';
+        const url = query ? `${API_URL}/memories/${USER_ID}?query=${query}` : `${API_URL}/memories/${USER_ID}`;
+        const response = await fetch(url, {
             headers: { 'X-API-KEY': API_KEY }
         });
 
@@ -78,8 +103,7 @@ async function fetchMemories() {
         updateMemoryPanel(memories);
         memoryStatus.textContent = '';
     } catch (error) {
-        console.error('Fetch Error:', error);
-        memoryStatus.innerHTML = `<span style="color: #ff4b4b">⚠️ ${error.message}</span>`;
+        memoryStatus.textContent = '❌ Sync Error';
     }
 }
 
