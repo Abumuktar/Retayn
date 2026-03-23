@@ -4,50 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retayn AI Demo | Persistent Memory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Outfit', sans-serif;
+            }
+        }
+    </style>
 </head>
-<body>
-    <div class="app-container">
+<body class="bg-[#0A0F1E] text-white overflow-hidden">
+    <div class="flex h-screen w-full relative">
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+
         <!-- Sidebar / Memory Panel -->
-        <aside class="memory-panel">
-            <div class="panel-header">
-                <span class="pulse-icon"></span>
-                <h2>Retayn Memory Bank</h2>
-                <button id="refresh-btn" class="mini-btn">🔄</button>
+        <aside id="memory-panel" class="fixed inset-y-0 left-0 z-50 w-[320px] bg-[#141B2D] border-r border-white/5 flex flex-col p-6 transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 shadow-2xl md:shadow-none">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <span class="pulse-icon w-2.5 h-2.5 bg-[#4F8EF7] rounded-full"></span>
+                    <h2 class="text-sm font-semibold tracking-wider text-[#4F8EF7] uppercase">Retayn Memory Bank</h2>
+                </div>
+                <div class="flex gap-2">
+                    <button id="refresh-btn" class="p-1 px-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-xs">🔄</button>
+                    <button id="close-sidebar" class="md:hidden p-1 text-white/50 hover:text-white">✕</button>
+                </div>
             </div>
-            <div id="memory-status" class="status-msg"></div>
-            <div id="memory-list" class="memory-list">
-                <div class="empty-state">No memories stored yet...</div>
+            
+            <div id="memory-status" class="text-[0.7rem] text-[#4F8EF7] mb-3 italic"></div>
+            
+            <div id="memory-list" class="flex-1 overflow-y-auto flex flex-col gap-3 pr-1 custom-scrollbar">
+                <div class="text-white/40 text-sm text-center mt-10">No memories stored yet...</div>
             </div>
-            <div class="panel-footer">
-                <p>Live context from <code>retayn-production</code></p>
+            
+            <div class="pt-5 mt-auto border-t border-white/5 text-[0.7rem] text-white/40">
+                <p>Live context from <code class="bg-white/5 px-1 rounded text-[#4F8EF7]">retayn-production</code></p>
             </div>
         </aside>
 
         <!-- Main Chat Area -->
-        <main class="chat-area">
-            <header class="chat-header">
-                <div class="logo">🌌 Retayn</div>
-                <div class="status-badge">Demo Mode</div>
+        <main class="flex-1 flex flex-col min-w-0 bg-[#0A0F1E]">
+            <header class="h-16 md:h-20 px-4 md:px-10 flex justify-between items-center border-b border-white/5 bg-[#0A0F1E]/80 backdrop-blur-md sticky top-0 z-30">
+                <div class="flex items-center gap-4">
+                    <button id="menu-toggle" class="md:hidden p-2 -ml-2 text-white/70 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="text-xl md:text-2xl font-semibold tracking-tight">🌌 Retayn</div>
+                </div>
+                <div class="text-[0.65rem] md:text-[0.75rem] bg-[#4F8EF7]/10 text-[#4F8EF7] px-3 py-1 rounded-full border border-[#4F8EF7]/30 font-medium">Demo Mode</div>
             </header>
             
-            <div id="chat-messages" class="chat-messages">
-                <div class="message ai-message">
+            <div id="chat-messages" class="flex-1 p-4 md:p-10 overflow-y-auto flex flex-col gap-5 custom-scrollbar">
+                <div class="max-w-[85%] md:max-w-[70%] p-4 md:p-5 rounded-2xl md:rounded-[2rem] rounded-bl-none md:rounded-bl-[0.5rem] bg-[#141B2D] border border-white/5 text-sm md:text-base leading-relaxed self-start">
                     Hello! I'm an AI powered by Retayn. Tell me something about yourself, and I'll remember it forever.
                 </div>
             </div>
 
-            <form id="chat-form" class="chat-input-container">
-                <input type="text" id="user-input" placeholder="Type something for me to remember..." autocomplete="off">
-                <button type="submit">
-                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M2.01 21L23 12L2.01 3L2 10l15 2l-15 2z"></path></svg>
+            <form id="chat-form" class="p-4 md:p-8 md:px-10 flex gap-3 md:gap-4 bg-[#0A0F1E]/50 backdrop-blur-md">
+                <input type="text" id="user-input" placeholder="Type something for me to remember..." autocomplete="off" class="flex-1 bg-[#141B2D] border border-white/10 rounded-xl md:rounded-2xl px-5 md:px-6 py-3 md:py-4 text-sm md:text-base outline-none focus:border-[#4F8EF7] transition-all placeholder:text-white/20">
+                <button type="submit" class="bg-[#4F8EF7] hover:bg-[#3d7ae6] active:scale-95 text-white px-5 md:px-8 rounded-xl md:rounded-2xl transition-all flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5 md:w-6 md:h-6"><path fill="currentColor" d="M2.01 21L23 12L2.01 3L2 10l15 2l-15 2z"></path></svg>
                 </button>
             </form>
         </main>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
