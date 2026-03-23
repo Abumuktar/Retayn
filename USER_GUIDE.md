@@ -49,7 +49,9 @@ curl -X POST "https://retayn-production.up.railway.app/v1/chat" \
 
 ## 4. Developer Notes
 
-- **One-File Demo**: The testing UI is at `http://localhost:3000/chat.html` (Local) or you can host `public/chat.html` anywhere and point it to the Railway URL.
+- **One-File Demo**:
+    - **Local**: `http://localhost:3000/chat.html`
+    - **Live (Railway)**: `https://retayn-production.up.railway.app/chat.html`
 - **Selective Storage**: Retayn uses Groq (Llama 3.3 70B) to decide what's worth remembering. Small talk is ignored; facts are stored!
 
 ## 4. Troubleshooting
