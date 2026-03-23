@@ -18,6 +18,7 @@ export const storeMemory = async (req: Request, res: Response) => {
     .single();
 
   if (error) {
+    console.error(`[MEMORY STORE ERROR] for ${user_id}:`, error.message, error.details, error.hint);
     return res.status(500).json({ error: error.message });
   }
 
@@ -71,6 +72,7 @@ export const getMemories = async (req: Request, res: Response) => {
   const { data, error } = await dbQuery.order('created_at', { ascending: false });
 
   if (error) {
+    console.error(`[MEMORY GET ERROR] for ${user_id}:`, error.message, error.details, error.hint);
     return res.status(500).json({ error: error.message });
   }
 
@@ -95,6 +97,7 @@ export const deleteMemory = async (req: Request, res: Response) => {
   const { error } = await dbQuery;
 
   if (error) {
+    console.error(`[MEMORY DELETE ERROR] for ${id}:`, error.message, error.details, error.hint);
     return res.status(500).json({ error: error.message });
   }
 

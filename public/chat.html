@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retayn | Intelligent Memory Chatbot</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
     <style type="text/tailwindcss">
         @layer base {
@@ -143,7 +144,7 @@
 
             } catch (err) {
                 console.error('Chat Error:', err);
-                addMessage("❌ Connection Error. Retayn could not be reached. Checking: " + API_URL, 'ai');
+                addMessage("❌ Connection Error. Retayn could not be reached. Checking: " + API_URL + ". Details: " + (err.message || 'Server 500'), 'ai');
             } finally {
                 setLoading(false);
             }
@@ -159,7 +160,7 @@
                 updateMemoryPanel(memories);
             } catch (err) {
                 console.error('Fetch Error:', err);
-                memoryList.innerHTML = '<div class="text-white/20 text-xs text-center mt-10 italic">Connection issues reaching memory bank...</div>';
+                memoryList.innerHTML = `<div class="text-white/20 text-xs text-center mt-10 italic">Connection issues reaching memory bank...<br><span class="opacity-50">${err.message}</span></div>`;
             }
         }
 

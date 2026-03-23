@@ -94,7 +94,12 @@ JSON FORMAT:
     });
 
   } catch (error: any) {
-    console.error('Chat Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('[CHAT ERROR]', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      stack: error.stack
+    });
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 };
