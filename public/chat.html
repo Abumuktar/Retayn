@@ -12,13 +12,14 @@
             body { font-family: 'Inter', sans-serif; }
             h1, h2, h3, strong { font-family: 'Outfit', sans-serif; }
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { display: none; }
+        .custom-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
     </style>
 </head>
-<body class="bg-[#0A0A0C] text-white h-screen overflow-hidden flex flex-col md:flex-row">
+<body class="bg-[#0A0A0C] text-white h-[100dvh] overflow-hidden flex flex-col md:flex-row">
     <!-- Sidebar Overlay (Mobile) -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity duration-300 opacity-0"></div>
 
@@ -40,7 +41,7 @@
     <!-- Main Chat Area -->
     <div class="flex-1 flex flex-col relative min-w-0 bg-[#0A0A0C]">
         <!-- Header -->
-        <header class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-[#0A0A0C]/80 backdrop-blur-xl sticky top-0 z-30">
+        <header class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-[#0A0A0C]/90 backdrop-blur-xl shrink-0 z-30">
             <div class="flex items-center gap-3">
                 <button id="toggle-bank" class="md:hidden p-2 -ml-2 bg-white/5 border border-white/10 rounded-lg text-white/70 hover:text-white transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -59,7 +60,7 @@
         </div>
 
         <!-- Input Area -->
-        <div class="p-4 md:p-8 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/80 to-transparent">
+        <div class="p-4 md:p-6 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C] to-transparent shrink-0">
             <form id="chat-form" class="max-w-3xl mx-auto flex gap-3 bg-[#16161D] p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-2xl focus-within:border-[#3b82f6]/50 transition-all">
                 <input type="text" id="user-input" placeholder="Tell me something or ask me anything..." autocomplete="off" class="flex-1 bg-transparent border-none text-white px-4 md:px-5 py-3 outline-none placeholder:text-white/20 text-sm md:text-base">
                 <button type="submit" id="send-btn" class="bg-[#3b82f6] hover:bg-[#2563eb] text-white px-6 md:px-8 py-3 rounded-xl font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center justify-center min-w-[100px] text-sm md:text-base">Send</button>
