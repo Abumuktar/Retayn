@@ -34,6 +34,10 @@ app.get('/v1/memories/:user_id', authMiddleware, getMemories);
 app.delete('/v1/memories/:id', authMiddleware, deleteMemory);
 
 // Start Server
-app.listen(port, () => {
-  console.log(`Retayn Core API listening at http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Retayn Core API listening at http://localhost:${port}`);
+  });
+}
+
+export default app;
