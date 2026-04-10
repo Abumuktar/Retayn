@@ -8,7 +8,7 @@ Retayn is a developer-first platform for building personalized AI experiences wi
 - **AI Core**: Groq Llama 3.3 70B (via direct Axios API calls)
 - **Database**: Supabase (PostgreSQL + UUIDs)
 - **Auth**: API-Key based middleware (X-API-KEY header)
-- **Deployed URL**: `https://retayn-production.up.railway.app`
+- **Deployed URL**: `https://retayn-ai.vercel.app`
 
 ## Key Components
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://retayn-production.up.railway.app/v1';
+const API_URL = 'https://retayn-ai.vercel.app/v1';
 const API_KEY = 'retayn_test_key_123';
 const USER_ID = 'diagnostic_test_user_' + Date.now();
 

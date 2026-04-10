@@ -14,21 +14,21 @@ Retayn is an **Intelligent Memory Layer** for the AI era. It allows your AI mode
 ## 1. Live Demo (Test it now)
 The easiest way to see Retayn in action is our live dashboard. No setup required.
 
-**🔗 [Retayn Live Demo](https://retayn-production.up.railway.app/chat.html)**
+**🔗 [Retayn Live Demo](https://retayn-ai.vercel.app/chat.html)**
 
 ---
 
 ## 2. API as a Service (Direct Integration)
 You can call the Retayn API directly from your own applications to add memory layers instantly.
 
-- **Base URL**: `https://retayn-production.up.railway.app`
+- **Base URL**: `https://retayn-ai.vercel.app`
 - **Auth Header**: `X-API-KEY: retayn_test_key_123` (Demo Key)
 
 ### Example: Send an Intelligent Chat Message
 This endpoint automatically retrieves user context and decides if new facts should be stored.
 
 ```bash
-curl -X POST "https://retayn-production.up.railway.app/v1/chat" \
+curl -X POST "https://retayn-ai.vercel.app/v1/chat" \
      -H "Content-Type: application/json" \
      -H "X-API-KEY: retayn_test_key_123" \
      -d '{
@@ -64,4 +64,4 @@ If you want to run the Retayn core locally for development:
 4. Access at `http://localhost:3000/chat.html`
 
 > [!NOTE]
-> For full technical architecture and setup details, please refer to the **[README.md](file:///c:/Users/dell/Desktop/Elio/README.md)**.
+> For full technical architecture and setup details, please refer to the **[README.md](./README.md)**.

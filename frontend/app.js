@@ -1,4 +1,4 @@
-const API_URL = 'https://retayn-production.up.railway.app/v1';
+const API_URL = 'https://retayn-ai.vercel.app/v1';
 const API_KEY = 'retayn_test_key_123';
 
 const chatForm = document.getElementById('chat-form');
